@@ -1,6 +1,7 @@
-#include "matrix.h"
+#pragma once
+#include "matrix_error_handling.h"
 
-const char *err_list[] = {
+const char *matrix_err_list[] = {
 	"unknown error.",
 	"matrices are not compatible for addition!",
 	"element subscript is invalid!",
@@ -14,17 +15,13 @@ const char *err_list[] = {
 	"matrices are not compatible for horizontal attachment!",
 	"matrices are not compatible for vertical attachment!",
 	"matrix is singular!",
-	"corner subscripts of the submatrix are incorrect!"
+	"corner subscripts of the submatrix are invaild!",
+	"matrix is void!"
 };
 
-void catch_std_exception(errors_enum err_num)
+void catch_matrix_exception(matrix_error err_num)
 {
 	std::cout << "An error occurred during the execution: ";
-	std::cout << err_list[err_num] << '\n';
+	std::cout << matrix_err_list[err_num] << '\n';
 }
 
-void catch_non_std_exception(int err_num)
-{
-	std::cout << "An error occurred during the execution: ";
-	std::cout << err_list[0] << '\n';
-}

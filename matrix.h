@@ -1,10 +1,10 @@
 #pragma once
-//"include" section
 
-#include <iostream>
+//"include" section
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include "matrix_error_handling.h"
 #include "subscript.h"
 
 
@@ -16,40 +16,6 @@
 #define ELEMENT_ID 1.0
 
 #define is_null(a) (abs(a) < EPS)
-
-#define throw_exception(is_valid, err_num) if(!(is_valid)) throw err_num
-#define stop_if_invalid(is_valid) if(!(is_valid)) return
-#define start_using_matrix try{
-#define catch_matrix_errors }catch (errors_enum err_num){ catch_std_exception(err_num); } catch (int err_num){ catch_non_std_exception(err_num); }
-
-
-
-
-
-
-//error handling section
-enum errors_enum {
-	MATRICES_ARE_NOT_COMPATIBLE_FOR_ADDITION = 1,
-	ELEMENT_SUBSCRIPT_IS_INVALID,
-	ROW_SUBSCRIPT_IS_INVALID,
-	COLUMN_SUBSCRIPT_IS_INVALID,
-	ROW_WIDTH_IS_INVALID,
-	COLUMN_HEIGHT_IS_INVALID,
-	MATRIX_IS_NOT_SQUARE,
-	MATRICES_ARE_NOT_COMPATIBLE_FOR_MULTIPLICATION,
-	DIVISION_BY_ZERO,
-	MATRICES_ARE_NOT_COMPATIBLE_FOR_HORIZONTAL_ATTACHMENT,
-	MATRICES_ARE_NOT_COMPATIBLE_FOR_VERTICAL_ATTACHMENT,
-	MATRIX_IS_SINGULAR,
-	SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INCORRECT
-};
-
-const char *err_list[];
-
-void catch_std_exception(errors_enum err_num);
-void catch_non_std_exception(int err_num);
-
-
 
 
 //declaration section
@@ -71,7 +37,8 @@ private:
 
 public:
 	//constructors
-	matrix(size_t = 0, size_t = 0);
+	matrix(size_t, size_t);
+	matrix(element_type = ELEMENT_NULL, size_t = 0);
 	matrix(const matrix <element_type> &);
 	matrix(const std::vector <element_type> &);
 	matrix(const element_type * const * const _array, const size_t &, const size_t &);
@@ -99,6 +66,7 @@ public:
 	friend std::ostream &operator <<(std::ostream &, const matrix <element_type> &);
 
 	//basic checking operations
+	bool is_void() const;
 	bool row_is_void(size_t) const;
 	bool column_is_void(size_t) const;
 	bool is_compatible(const matrix <element_type> &) const;
@@ -161,7 +129,7 @@ matrix <element_type> scalar(size_t, const element_type);
 template <class element_type>
 matrix <element_type> E(size_t size)
 {
-	matrix <element_type> result = scalar(size, ELEMENT_ID);
+	matrix <element_type> result(ELEMENT_ID, size);
 	return result;
 }
 
@@ -199,7 +167,7 @@ matrix <element_type> operator /(const matrix <element_type> &, const matrix <el
 
 template <class element_type>
 matrix <element_type> operator &(const matrix <element_type> &, const matrix <element_type> &);
-//this operator returns direct sum of two matrices
+//this operator returns the direct sum of two matrices
 
 
 
@@ -242,6 +210,15 @@ matrix<element_type>::matrix(size_t new_height, size_t new_width)
 		{
 			(*this)[cb(row_counter, column_counter)] = ELEMENT_NULL;
 		}
+	}
+}
+
+template<class element_type>
+matrix<element_type>::matrix(element_type value, size_t size) : matrix(size, size)
+{
+	for (size_t i = 0; i < size; i++)
+	{
+		(*this)[cb(i, i)] = value;
 	}
 }
 
@@ -494,6 +471,12 @@ inline matrix<element_type> operator&(const matrix<element_type>& left_top, cons
 
 
 template<class element_type>
+inline bool matrix<element_type>::is_void() const
+{
+	return !(this->get_height() && this->get_width());
+}
+
+template<class element_type>
 bool matrix<element_type>::row_is_void(size_t row_number) const
 {
 	if (!this->row_is_valid(row_number)) return true;
@@ -696,6 +679,7 @@ void matrix<element_type>::to_diagonal_row()
 template<class element_type>
 void matrix<element_type>::inverse()
 {
+	throw_exception(!this->is_void(), MATRIX_IS_VOID);
 	throw_exception(this->is_square(), MATRIX_IS_NOT_SQUARE);
 	throw_exception(!this->is_singular(), MATRIX_IS_SINGULAR);
 	matrix <element_type> this_copy(*this);
@@ -744,9 +728,9 @@ inline matrix<element_type> matrix<element_type>::get_diagonal() const
 template<class element_type>
 matrix<element_type> matrix<element_type>::get_submatrix(subscript left_top, subscript right_bottom) const
 {
-	throw_exception(left_top <= right_bottom, SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INCORRECT);
-	throw_exception(this->is_valid(left_top), SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INCORRECT);
-	throw_exception(this->is_valid(right_bottom), SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INCORRECT);
+	throw_exception(left_top <= right_bottom, SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INVALID);
+	throw_exception(this->is_valid(left_top), SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INVALID);
+	throw_exception(this->is_valid(right_bottom), SUBMATRIX_CORNER_SUBSCRIPTS_ARE_INVALID);
 	subscript delta = right_bottom - left_top;
 	matrix <element_type> result(delta.row_number + 1, delta.column_number + 1);
 	for (size_t row_counter = 0; row_counter <= delta.row_number; row_counter++)
@@ -866,12 +850,7 @@ subscript matrix<element_type>::find_first_non_zero(size_t lower_height, size_t 
 template<class element_type>
 matrix<element_type> scalar(size_t size, const element_type value)
 {
-	matrix <element_type> result(size, size);
-	for (size_t i = 0; i < size; i++)
-	{
-		result[cb(i, i)] = value;
-	}
-	return result;
+	
 }
 
 template<class element_type>
