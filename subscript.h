@@ -1,19 +1,16 @@
 #pragma once
 #include <algorithm>
 #include <iostream>
-#include "standard_error_handling.h"
+#include "matrix_error_handling.h"
+
+#ifndef SUBSCRIPT
+#define SUBSCRIPT
+#endif // !SUBSCRIPT
+
 
 #define MAX_STRING_SIZE 30
 
 #define NULL_SUBSCRIPT cb((size_t)(-1), (size_t)(-1))
-
-enum subscript_error {
-	THE_STRING_IS_NOT_A_VALID_SUBSCRIPT = 1
-};
-
-const char *subscript_err_list[];
-
-void catch_subscript_exception(subscript_error);
 
 class subscript
 {

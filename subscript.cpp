@@ -2,22 +2,11 @@
 #include <iostream>
 #include "subscript.h"
 
-const char *subscript_err_list[] = {
-	"unkown error",
-	"the string is not a valid subscript"
-};
-
 subscript::subscript(size_t i, size_t j) : row_number(i), column_number(j) {}
 
 subscript subscript::reflect()
 {
 	return subscript(column_number, row_number);
-}
-
-void catch_subscript_exception(subscript_error err_num)
-{
-	std::cout << "An error occurred during the execution: ";
-	std::cout << subscript_err_list[err_num];
 }
 
 std::istream & operator>>(std::istream & input, subscript &new_subscript)

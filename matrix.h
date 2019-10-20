@@ -4,9 +4,12 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include "matrix_error_handling.h"
 #include "subscript.h"
+#include "minor.h"
 
+#ifndef MATRIX
+#define MATRIX
+#endif // !MATRIX
 
 
 
@@ -29,7 +32,10 @@ private:
 	size_t height = 0;
 	size_t width = 0;
 	element_type **body = NULL;
+	minor base_minor;
 	bool is_transposed = false;
+
+	//additional fields
 
 	//basic private operations
 	void assign_one_row_to_another(size_t, size_t);
@@ -50,6 +56,7 @@ public:
 	//basic get_ functions
 	size_t get_height() const;
 	size_t get_width() const;
+	minor get_base_minor() const;
 
 	//basic internal operators
 	matrix <element_type> &operator =(const matrix <element_type> &);
@@ -73,6 +80,7 @@ public:
 	bool is_valid(subscript) const;
 	bool row_is_valid(size_t) const;
 	bool column_is_valid(size_t) const;
+	bool is_suitable(const minor &) const;
 	bool is_square() const;
 	bool is_singular() const;
 
@@ -85,7 +93,7 @@ public:
 	void add_column(size_t, size_t, element_type);
 	void multiply_column(size_t, element_type);
 	void transpone();
-	void to_diagonal();
+	size_t to_diagonal();
 	void to_diagonal_row();
 	void inverse();
 	void to_regular();
@@ -95,6 +103,7 @@ public:
 	matrix <element_type> get_transponed() const;
 	matrix <element_type> get_diagonal() const;
 	matrix <element_type> get_submatrix(subscript, subscript) const;
+	matrix <element_type> get_submatrix(const minor &) const;
 	element_type determinant() const;
 	element_type get_sign() const;
 	size_t rank() const;
@@ -271,6 +280,14 @@ template<class element_type>
 size_t matrix<element_type>::get_width() const
 {
 	return this->width;
+}
+
+template<class element_type>
+minor matrix<element_type>::get_base_minor() const
+{
+	matrix <element_type> this_copy = (*this);
+	this_copy.to_diagonal();
+	return this_copy.base_minor;
 }
 
 template<class element_type>
@@ -523,6 +540,18 @@ bool matrix<element_type>::column_is_valid(size_t column_number) const
 }
 
 template<class element_type>
+bool matrix<element_type>::is_suitable(const minor &grid) const
+{
+	size_t max_row_subscript = 0, max_column_subscript = 0;
+	for (int i = 0; i < grid.get_order(); i++)
+	{
+		max_row_subscript = std::max(max_row_subscript, grid.get_row_number(i));
+		max_column_subscript = std::max(max_column_subscript, grid.get_column_number(i));
+	}
+	return (max_row_subscript < this->get_height() && max_column_subscript < this->get_width());
+}
+
+template<class element_type>
 bool matrix<element_type>::is_square() const
 {
 	return this->width == this->height;
@@ -540,6 +569,7 @@ void matrix<element_type>::clear()
 	this->body = NULL;
 	this->height = 0;
 	this->width = 0;
+	this->base_minor.clear();
 	//std::cout << "The matrix was successfully cleared\n";
 }
 
@@ -630,13 +660,19 @@ void matrix<element_type>::transpone()
 }
 
 template<class element_type>
-void matrix<element_type>::to_diagonal()
+size_t matrix<element_type>::to_diagonal()
 {
-	size_t size = std::min(this->get_height(), this->get_width());
+	stop_if_invalid(!this->is_void()) 0;
+	size_t size = std::min(this->get_height(), this->get_width()), curr_rank = 0;
+	size_t *non_zero_minor_rows = new size_t[size];
+	size_t *non_zero_minor_columns = new size_t[size];
 	for (size_t i = 0; i < size; i++)
 	{
 		subscript next_non_zero = this->find_first_non_zero(i, i);
-		stop_if_invalid(next_non_zero != NULL_SUBSCRIPT);
+		break_if_invalid(next_non_zero != NULL_SUBSCRIPT);
+		curr_rank++;
+		non_zero_minor_rows[i] = next_non_zero.row_number;
+		non_zero_minor_columns[i] = next_non_zero.column_number;
 		this->move_element(cb(i, i), next_non_zero);
 		for (size_t row_counter = i + 1; row_counter < this->get_height(); row_counter++)
 		{
@@ -649,7 +685,12 @@ void matrix<element_type>::to_diagonal()
 			this->add_column(i, column_counter, -coefficient);
 		}
 	}
+	(this->base_minor) = minor(non_zero_minor_rows, non_zero_minor_rows + curr_rank, non_zero_minor_columns, non_zero_minor_columns + curr_rank);
+	std::cout << this->base_minor.get_order() << "\n";
+	delete[] non_zero_minor_rows;
+	delete[] non_zero_minor_columns;
 	this->to_regular();
+	return curr_rank;
 }
 
 template<class element_type>
@@ -744,6 +785,21 @@ matrix<element_type> matrix<element_type>::get_submatrix(subscript left_top, sub
 }
 
 template<class element_type>
+matrix<element_type> matrix<element_type>::get_submatrix(const minor &grid) const
+{
+	throw_exception(this->is_suitable(grid), MINOR_PATTERN_IS_NOT_SUITABLE_FOR_THE_MATRIX);
+	matrix <element_type> result(grid.get_order(), grid.get_order());
+	for (size_t row_subscript = 0; row_subscript < grid.get_order(); row_subscript++)
+	{
+		for (size_t column_subscript = 0; column_subscript < grid.get_order(); column_subscript++)
+		{
+			result[cb(row_subscript, column_subscript)] = (*this)[cb(grid.get_row_number(row_subscript), grid.get_column_number(column_subscript))];
+		}
+	}
+	return result;
+}
+
+template<class element_type>
 element_type matrix<element_type>::determinant() const
 {
 	throw_exception(this->is_square(), MATRIX_IS_NOT_SQUARE);
@@ -767,14 +823,7 @@ template<class element_type>
 size_t matrix<element_type>::rank() const
 {
 	matrix <element_type> temp_matrix = (*this);
-	temp_matrix.to_diagonal();
-	size_t current_rank = 0;
-	size_t size = std::min(this->height, this->width);
-	for (size_t i = 0; i < size; i++)
-	{
-		if (!is_null(temp_matrix[cb(i, i)])) current_rank++;
-	}
-	return current_rank;
+	return temp_matrix.to_diagonal();
 }
 
 template<class element_type>
