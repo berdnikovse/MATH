@@ -32,10 +32,10 @@ private:
 	size_t height = 0;
 	size_t width = 0;
 	element_type **body = NULL;
-	minor base_minor;
 	bool is_transposed = false;
 
 	//additional fields
+	minor base_minor;
 
 	//basic private operations
 	void assign_one_row_to_another(size_t, size_t);
