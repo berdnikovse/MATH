@@ -30,4 +30,3 @@ void catch_matrix_exception(matrix_error err_num)
 	std::cout << "An error occurred during the execution: ";
 	std::cout << matrix_err_list[err_num] << '\n';
 }
-

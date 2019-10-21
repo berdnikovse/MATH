@@ -1,6 +1,8 @@
 #pragma once
 #include "standard_error_handling.h"
 
+#define catch_matrix_errors catch (matrix_error err_num) { catch_matrix_exception(err_num); }
+
 enum matrix_error {
 	MATRICES_ARE_NOT_COMPATIBLE_FOR_ADDITION = 1,
 	ELEMENT_SUBSCRIPT_IS_INVALID,

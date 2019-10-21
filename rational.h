@@ -1,0 +1,70 @@
+#pragma once
+
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include "rational_error_handling.h"
+
+#ifndef RATIONAL
+#define RATIONAL
+#endif // !RATIONAL
+
+
+typedef signed long long front_t;
+typedef unsigned long long basic_t;
+typedef signed char sign_t;
+
+class rational
+{
+private:
+	sign_t sign = 1;
+	basic_t numerator = 0;
+	basic_t denominator = 1;
+
+	basic_t get_num() const;
+	basic_t get_denom() const;
+	void change_sign();
+	void simplify();
+public:
+	rational(const rational &);
+	rational(front_t, front_t);
+	rational(basic_t, basic_t, sign_t);
+	rational(basic_t = 0);
+	~rational();
+
+	rational &operator =(const rational &);
+	rational &operator +=(const rational &);
+	rational &operator -=(const rational &);
+	rational &operator *=(const rational &);
+	rational &operator /=(const rational &);
+
+	friend rational operator -(const rational &);
+
+	friend std::istream & operator >> (std::istream &, rational &);
+	friend std::ostream & operator << (std::ostream &, const rational &);
+
+	sign_t get_sign() const;
+	front_t get_numerator() const;
+	front_t get_denominator() const;
+	rational absolute_value() const;
+};
+
+rational operator +(rational, rational);
+rational operator -(rational, rational);
+rational operator *(rational, rational);
+rational operator /(rational, rational);
+
+bool operator <(const rational &, const rational &);
+bool operator >(const rational &, const rational &);
+bool operator <=(const rational &, const rational &);
+bool operator >=(const rational &, const rational &);
+bool operator ==(const rational &, const rational &);
+bool operator !=(const rational &, const rational &);
+
+basic_t gcd(basic_t, basic_t);
+
+template <class T>
+constexpr sign_t SGN(T a)
+{
+	return a < 0 ? -1 : 1;
+}

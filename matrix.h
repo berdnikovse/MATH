@@ -7,6 +7,8 @@
 #include "subscript.h"
 #include "minor.h"
 
+
+
 #ifndef MATRIX
 #define MATRIX
 #endif // !MATRIX
@@ -40,6 +42,7 @@ private:
 	//basic private operations
 	void assign_one_row_to_another(size_t, size_t);
 	void assign_one_column_to_another(size_t, size_t);
+	void change_sign();
 
 public:
 	//constructors
@@ -64,6 +67,9 @@ public:
 	matrix <element_type> &operator -=(const matrix <element_type> &);
 	element_type &operator[] (subscript);
 	element_type operator[] (subscript) const;
+
+	template <class element_type>
+	friend matrix <element_type> operator -(const matrix <element_type> &);
 
 	//input/output operators
 	template <class element_type>
@@ -146,6 +152,12 @@ template <class element_type>
 matrix <element_type> power(matrix <element_type>, int);
 
 template <class element_type>
+bool operator == (const matrix <element_type> &, const matrix <element_type> &);
+
+template <class element_type>
+bool operator != (const matrix <element_type> &, const matrix <element_type> &);
+
+template <class element_type>
 matrix <element_type> operator +(const matrix <element_type> &, const matrix <element_type> &);
 
 template <class element_type>
@@ -202,6 +214,18 @@ void matrix<element_type>::assign_one_column_to_another(size_t source_number, si
 	for (size_t row_counter = 0; row_counter < this->height; row_counter++)
 	{
 		(*this)[cb(row_counter, copy_number)] = (*this)[cb(row_counter, source_number)];
+	}
+}
+
+template<class element_type>
+void matrix<element_type>::change_sign()
+{
+	for (size_t row_counter = 0; row_counter < this->get_height(); row_counter++)
+	{
+		for (size_t column_counter = 0; column_counter < this->get_width(); column_counter++)
+		{
+			(*this)[cb(row_counter, column_counter)] = -(*this)[cb(row_counter, column_counter)];
+		}
 	}
 }
 
@@ -334,6 +358,14 @@ matrix<element_type>& matrix<element_type>::operator -= (const matrix<element_ty
 		}
 	}
 	return *this;
+}
+
+template<class element_type>
+matrix<element_type> operator -(const matrix<element_type> & A)
+{
+	matrix <element_type> A_copy(A);
+	A_copy.change_sign();
+	return A_copy;
 }
 
 template<class element_type>
@@ -926,6 +958,27 @@ matrix<element_type> power(matrix <element_type> A, int deg)
 		}
 	}
 	return result;
+}
+
+template<class element_type>
+bool operator==(const matrix<element_type> & L, const matrix<element_type> & R)
+{
+	if (L.get_height() != R.get_height()) return false;
+	if (L.get_width() != R.get_width()) return false;
+	for (size_t row_counter = 0; row_counter < L.get_height(); row_counter++)
+	{
+		for (size_t column_counter = 0; column_counter < L.get_width(); column_counter++)
+		{
+			if (!is_null(L[cb(row_counter, column_counter)] - R[cb(row_counter, column_counter)])) return false;
+		}
+	}
+	return true;
+}
+
+template<class element_type>
+inline bool operator!=(const matrix<element_type> & L, const matrix<element_type>& R)
+{
+	return !(L == R);
 }
 
 template<class element_type>
