@@ -1,6 +1,11 @@
 #pragma once
 #include <iostream>
+
+#ifndef SUBSCRIPT
 #include "subscript.h"
+#endif // !SUBSCRIPT
+
+#define MAX_STRING_SIZE 30
 
 subscript::subscript(size_t i, size_t j) : row_number(i), column_number(j) {}
 
@@ -33,7 +38,7 @@ subscript string_to_subscript(const unsigned char str[])
 	throw_exception(string_is_subscript(str), THE_STRING_IS_NOT_A_VALID_SUBSCRIPT);
 	subscript result;
 	size_t i = 1;
-	for (; i < str[i] != '\0' && str[i] != ']'; i++)
+	for (; str[i] != '\0' && str[i] != ']'; i++)
 	{
 		result.row_number = result.row_number * 10 + str[i] - '0';
 	}
@@ -75,11 +80,6 @@ subscript operator-(subscript R, subscript L)
 subscript operator+(subscript R, subscript L)
 {
 	return cb(R.row_number + L.row_number, R.column_number + L.column_number);
-}
-
-bool is_digit(unsigned char c)
-{
-	return (c >= '0') && (c <= '9');
 }
 
 bool string_is_subscript(const unsigned char str[])

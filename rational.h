@@ -4,15 +4,12 @@
 #include <cmath>
 #include <algorithm>
 #include "rational_error_handling.h"
-
-#ifndef RATIONAL
-#define RATIONAL
-#endif // !RATIONAL
-
+#include "standard_functions.h"
 
 typedef signed long long front_t;
 typedef unsigned long long basic_t;
 typedef signed char sign_t;
+typedef unsigned char char_t;
 
 class rational
 {
@@ -29,7 +26,7 @@ public:
 	rational(const rational &);
 	rational(front_t, front_t);
 	rational(basic_t, basic_t, sign_t);
-	rational(basic_t = 0);
+	rational(front_t = 0);
 	~rational();
 
 	rational &operator =(const rational &);
@@ -63,8 +60,5 @@ bool operator !=(const rational &, const rational &);
 
 basic_t gcd(basic_t, basic_t);
 
-template <class T>
-constexpr sign_t SGN(T a)
-{
-	return a < 0 ? -1 : 1;
-}
+bool is_rational(char_t str[]);
+rational string_to_rational(char_t str[]);

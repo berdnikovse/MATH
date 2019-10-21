@@ -1,5 +1,7 @@
 #include "rational.h"
 
+#define MAX_STRING_SIZE 50
+
 bool operator==(const rational & L, const rational & R)
 {
 	return L.get_numerator() == R.get_numerator() && L.get_denominator() == R.get_denominator() && L.get_sign() == R.get_sign();
@@ -14,6 +16,36 @@ basic_t gcd(basic_t a, basic_t b)
 {
 	while (b) a %= b, std::swap(a, b);
 	return a;
+}
+
+bool is_rational(char_t str[])
+{
+	size_t i = 0;
+	if (str[i] == '-')
+	{
+		i++;
+	}
+	for (; i < MAX_STRING_SIZE; i++)
+	{
+		if (!is_digit(str[i]))
+		{
+			break_if_invalid(str[i] != '/');
+			if (str[i] == '\0') return true;
+			return false;
+		}
+		if (i + 1 == MAX_STRING_SIZE) return false;
+	}
+	for (++i; i < MAX_STRING_SIZE; i++)
+	{
+		if (!is_digit(str[i]))
+		{
+			if (str[i - 1] == '/') return false;
+			break_if_invalid(str[i] != '\0');
+			return false;
+		}
+		if (i + 1 == MAX_STRING_SIZE) return false;
+	}
+	return true;
 }
 
 basic_t rational::get_num() const
@@ -46,7 +78,7 @@ rational::rational(const rational &to_copy) :
 }
 
 rational::rational(front_t new_numerator, front_t new_denominator) :
-	numerator(std::abs(new_numerator)), denominator(std::abs(new_denominator)), sign(SGN(new_numerator) * SGN(new_denominator)) {
+	numerator(ABS(new_numerator)), denominator(ABS(new_denominator)), sign(SGN(new_numerator) * SGN(new_denominator)) {
 	this->simplify();
 }
 
@@ -55,8 +87,8 @@ rational::rational(basic_t new_numerator, basic_t new_denominator, sign_t pseudo
 	this->simplify();
 }
 
-rational::rational(basic_t new_numerator) :
-	numerator(new_numerator), denominator(1), sign(1) {}
+rational::rational(front_t new_numerator) :
+	numerator(ABS(new_numerator)), denominator(1), sign(SGN(new_numerator)) {}
 
 rational::~rational() {}
 
@@ -78,12 +110,19 @@ rational operator-(const rational & A)
 
 std::istream & operator>>(std::istream & input, rational & new_rational)
 {
+	char_t new_rational_str[MAX_STRING_SIZE];
+	input >> new_rational_str;
+	new_rational = string_to_rational(new_rational_str);
 	return input;
 }
 
 std::ostream & operator<<(std::ostream & output, const rational & to_be_printed)
 {
-	output << to_be_printed.get_numerator() << "/" << to_be_printed.get_denominator();
+	output << to_be_printed.get_numerator();
+	if (to_be_printed.get_denominator() > 1)
+	{
+		output << "/" << to_be_printed.get_denominator();
+	}
 	return output;
 }
 
@@ -198,4 +237,30 @@ inline bool operator<=(const rational & L, const rational & R)
 inline bool operator>=(const rational & L, const rational & R)
 {
 	return !(L < R);
+}
+
+rational string_to_rational(char_t str[])
+{
+	throw_exception(is_rational(str), STRING_IS_NOT_A_FRACTION);
+	size_t i = 0;
+	basic_t new_numerator = 0;
+	basic_t new_denominator = 0;
+	sign_t new_sign = 1;
+	if (str[i] == '-')
+	{
+		i++;
+		new_sign *= -1;
+	}
+	if (str[i] == '/') new_numerator = 1;
+	for (; str[i] != '\0' && str[i] != '/'; i++)
+	{
+		new_numerator = new_numerator * 10 + str[i] - '0';
+	}
+	if (str[i] == '\0') return rational(new_numerator, 1, new_sign);
+	i++;
+	for (; str[i] != '\0' && str[i] != '/'; i++)
+	{
+		new_denominator = new_denominator * 10 + str[i] - '0';
+	}
+	return rational(new_numerator, new_denominator, new_sign);
 }

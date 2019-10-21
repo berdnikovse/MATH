@@ -8,7 +8,6 @@
 #include "minor.h"
 
 
-
 #ifndef MATRIX
 #define MATRIX
 #endif // !MATRIX
@@ -17,10 +16,10 @@
 
 //macroses and type-depending operations section
 #define EPS 1e-6
-#define ELEMENT_NULL 0.0
-#define ELEMENT_ID 1.0
+#define ELEMENT_NULL 0
+#define ELEMENT_ID 1
 
-#define is_null(a) (abs(a) < EPS)
+#define is_null(a) ((a) == 0)
 
 
 //declaration section
@@ -47,7 +46,7 @@ private:
 public:
 	//constructors
 	matrix(size_t, size_t);
-	matrix(element_type = ELEMENT_NULL, size_t = 0);
+	matrix(size_t = 0);
 	matrix(const matrix <element_type> &);
 	matrix(const std::vector <element_type> &);
 	matrix(const element_type * const * const _array, const size_t &, const size_t &);
@@ -144,8 +143,7 @@ matrix <element_type> scalar(size_t, const element_type);
 template <class element_type>
 matrix <element_type> E(size_t size)
 {
-	matrix <element_type> result(ELEMENT_ID, size);
-	return result;
+	return matrix <element_type>(size);
 }
 
 template <class element_type>
@@ -247,11 +245,11 @@ matrix<element_type>::matrix(size_t new_height, size_t new_width)
 }
 
 template<class element_type>
-matrix<element_type>::matrix(element_type value, size_t size) : matrix(size, size)
+matrix<element_type>::matrix(size_t size) : matrix(size, size)
 {
 	for (size_t i = 0; i < size; i++)
 	{
-		(*this)[cb(i, i)] = value;
+		(*this)[cb(i, i)] = ELEMENT_ID;
 	}
 }
 
@@ -718,7 +716,6 @@ size_t matrix<element_type>::to_diagonal()
 		}
 	}
 	(this->base_minor) = minor(non_zero_minor_rows, non_zero_minor_rows + curr_rank, non_zero_minor_columns, non_zero_minor_columns + curr_rank);
-	std::cout << this->base_minor.get_order() << "\n";
 	delete[] non_zero_minor_rows;
 	delete[] non_zero_minor_columns;
 	this->to_regular();

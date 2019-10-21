@@ -2,13 +2,12 @@
 #include <algorithm>
 #include <iostream>
 #include "matrix_error_handling.h"
+#include "standard_functions.h"
+
 
 #ifndef SUBSCRIPT
 #define SUBSCRIPT
 #endif // !SUBSCRIPT
-
-
-#define MAX_STRING_SIZE 30
 
 #define NULL_SUBSCRIPT cb((size_t)(-1), (size_t)(-1))
 
