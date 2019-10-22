@@ -12,12 +12,6 @@ bool operator!=(const rational & L, const rational & R)
 	return !(L == R);
 }
 
-basic_t gcd(basic_t a, basic_t b)
-{
-	while (b) a %= b, std::swap(a, b);
-	return a;
-}
-
 bool is_rational(char_t str[])
 {
 	size_t i = 0;
@@ -66,9 +60,7 @@ void rational::change_sign()
 void rational::simplify()
 {
 	throw_exception(this->get_denom() != 0, RATIONAL_DIVISION_BY_ZERO);
-	basic_t common_factor = gcd(this->get_num(), this->get_denom());
-	this->numerator /= common_factor;
-	this->denominator /= common_factor;
+	cancel__(this->numerator, this->denominator);
 	if (this->get_num() == 0) this->sign = 1;
 }
 
@@ -157,6 +149,10 @@ rational & rational::operator -=(const rational & to_be_subtracted)
 
 rational & rational::operator *=(const rational & to_be_multiplied)
 {
+	basic_t to_be_multiplied_num = to_be_multiplied.get_num();
+	basic_t to_be_multiplied_denom = to_be_multiplied.get_denom();
+	cancel__(this->numerator, to_be_multiplied_denom);
+	cancel__(this->denominator, to_be_multiplied_num);
 	this->numerator *= to_be_multiplied.get_num();
 	this->denominator *= to_be_multiplied.get_denom();
 	this->sign *= to_be_multiplied.get_sign();
@@ -165,6 +161,10 @@ rational & rational::operator *=(const rational & to_be_multiplied)
 
 rational & rational::operator/=(const rational & to_be_divided)
 {
+	basic_t to_be_divided_num = to_be_divided.get_num();
+	basic_t to_be_divided_denom = to_be_divided.get_denom();
+	cancel__(this->numerator, to_be_divided_num);
+	cancel__(this->denominator, to_be_divided_denom);
 	this->numerator *= to_be_divided.get_denom();
 	this->denominator *= to_be_divided.get_num();
 	this->sign *= to_be_divided.get_sign();

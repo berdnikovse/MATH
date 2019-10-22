@@ -8,12 +8,6 @@
 #include "minor.h"
 
 
-#ifndef MATRIX
-#define MATRIX
-#endif // !MATRIX
-
-
-
 //macroses and type-depending operations section
 #define EPS 1e-6
 #define ELEMENT_NULL 0
@@ -138,13 +132,10 @@ public:
 
 //pseudoconsructor
 template <class element_type>
-matrix <element_type> scalar(size_t, const element_type);
+matrix <element_type> scalar(size_t, const element_type &);
 
 template <class element_type>
-matrix <element_type> E(size_t size)
-{
-	return matrix <element_type>(size);
-}
+matrix <element_type> E(size_t size);
 
 template <class element_type>
 matrix <element_type> power(matrix <element_type>, int);
@@ -926,9 +917,15 @@ subscript matrix<element_type>::find_first_non_zero(size_t lower_height, size_t 
 }
 
 template<class element_type>
-matrix<element_type> scalar(size_t size, const element_type value)
+inline matrix<element_type> scalar(size_t size, const element_type &value)
 {
-	
+	return matrix <element_type>(size) * value;
+}
+
+template<class element_type>
+inline matrix<element_type> E(size_t size)
+{
+	return matrix<element_type>();
 }
 
 template<class element_type>

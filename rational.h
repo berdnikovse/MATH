@@ -58,7 +58,5 @@ bool operator >=(const rational &, const rational &);
 bool operator ==(const rational &, const rational &);
 bool operator !=(const rational &, const rational &);
 
-basic_t gcd(basic_t, basic_t);
-
 bool is_rational(char_t str[]);
 rational string_to_rational(char_t str[]);

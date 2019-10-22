@@ -2,10 +2,6 @@
 
 #include "matrix_error_handling.h"
 
-#ifndef MINOR
-#define MINOR
-#endif // !MINOR
-
 
 class minor
 {
