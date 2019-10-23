@@ -149,10 +149,6 @@ rational & rational::operator -=(const rational & to_be_subtracted)
 
 rational & rational::operator *=(const rational & to_be_multiplied)
 {
-	basic_t to_be_multiplied_num = to_be_multiplied.get_num();
-	basic_t to_be_multiplied_denom = to_be_multiplied.get_denom();
-	cancel__(this->numerator, to_be_multiplied_denom);
-	cancel__(this->denominator, to_be_multiplied_num);
 	this->numerator *= to_be_multiplied.get_num();
 	this->denominator *= to_be_multiplied.get_denom();
 	this->sign *= to_be_multiplied.get_sign();
@@ -161,10 +157,6 @@ rational & rational::operator *=(const rational & to_be_multiplied)
 
 rational & rational::operator/=(const rational & to_be_divided)
 {
-	basic_t to_be_divided_num = to_be_divided.get_num();
-	basic_t to_be_divided_denom = to_be_divided.get_denom();
-	cancel__(this->numerator, to_be_divided_num);
-	cancel__(this->denominator, to_be_divided_denom);
 	this->numerator *= to_be_divided.get_denom();
 	this->denominator *= to_be_divided.get_num();
 	this->sign *= to_be_divided.get_sign();
