@@ -93,11 +93,11 @@ rational & rational::operator=(const rational &to_be_copied)
 	return *this;
 }
 
-rational operator-(const rational & A)
+rational rational::operator-() const
 {
-	rational A_copy(A);
-	A_copy.change_sign();
-	return A_copy;
+	rational this_copy(*this);
+	this_copy.change_sign();
+	return this_copy;
 }
 
 std::istream & operator>>(std::istream & input, rational & new_rational)
@@ -120,7 +120,7 @@ std::ostream & operator<<(std::ostream & output, const rational & to_be_printed)
 
 rational & rational::operator +=(const rational &to_be_added)
 {
-	basic_t new_denominator = this->get_denom() * to_be_added.get_denom();
+	basic_t common_denominator = lcm(this->get_denom(), to_be_added.get_denom());
 	basic_t new_numerator;
 	rational this_abs = this->absolute_value();
 	rational to_be_added_abs = to_be_added.absolute_value();
@@ -130,13 +130,13 @@ rational & rational::operator +=(const rational &to_be_added)
 	{
 		if (this_abs < to_be_added_abs)
 		{
-			new_numerator = this->get_denom() * to_be_added.get_num() - this->get_num() * to_be_added.get_denom();
+			new_numerator = common_denominator / to_be_added.get_denom() * to_be_added.get_num() - common_denominator / this->get_denom() * this->get_num();
 			eventual_sign *= -1;
 		}
-		else new_numerator = this->get_num() * to_be_added.get_denom() - this->get_denom() * to_be_added.get_num();
+		else new_numerator = common_denominator / this->get_denom() * this->get_num() - common_denominator / to_be_added.get_denom() * to_be_added.get_num();
 	}
-	else new_numerator = this->get_num() * to_be_added.get_denom() + this->get_denom() * to_be_added.get_num();
-	(*this) = rational(new_numerator, new_denominator, eventual_sign);
+	else new_numerator = common_denominator / this->get_denom() * this->get_num() + common_denominator / to_be_added.get_denom() * to_be_added.get_num();
+	(*this) = rational(new_numerator, common_denominator, eventual_sign);
 	return *this;
 }
 
@@ -149,16 +149,24 @@ rational & rational::operator -=(const rational & to_be_subtracted)
 
 rational & rational::operator *=(const rational & to_be_multiplied)
 {
-	this->numerator *= to_be_multiplied.get_num();
-	this->denominator *= to_be_multiplied.get_denom();
+	basic_t to_be_multiplied_num = to_be_multiplied.get_num();
+	basic_t to_be_multiplied_denom = to_be_multiplied.get_denom();
+	cancel__(this->numerator, to_be_multiplied_denom);
+	cancel__(this->denominator, to_be_multiplied_num);
+	this->numerator *= to_be_multiplied_num;
+	this->denominator *= to_be_multiplied_denom;
 	this->sign *= to_be_multiplied.get_sign();
 	return *this;
 }
 
 rational & rational::operator/=(const rational & to_be_divided)
 {
-	this->numerator *= to_be_divided.get_denom();
-	this->denominator *= to_be_divided.get_num();
+	basic_t to_be_divided_num = to_be_divided.get_num();
+	basic_t to_be_divided_denom = to_be_divided.get_denom();
+	cancel__(this->numerator, to_be_divided_num);
+	cancel__(this->denominator, to_be_divided_denom);
+	this->numerator *= to_be_divided_denom;
+	this->denominator *= to_be_divided_num;
 	this->sign *= to_be_divided.get_sign();
 	return *this;
 }
@@ -213,7 +221,8 @@ bool operator<(const rational & L, const rational & R)
 {
 	if (L.get_sign() < R.get_sign()) return true;
 	if (L.get_sign() > R.get_sign()) return true;
-	return L.get_numerator() * R.get_denominator() < L.get_denominator() * R.get_numerator();
+	basic_t common_denominator = lcm(L.get_denominator(), R.get_denominator());
+	return common_denominator / L.get_denominator() * L.get_numerator() < common_denominator / R.get_denominator() * R.get_numerator();
 }
 
 inline bool operator>(const rational & L, const rational & R)

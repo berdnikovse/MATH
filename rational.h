@@ -34,8 +34,7 @@ public:
 	rational &operator -=(const rational &);
 	rational &operator *=(const rational &);
 	rational &operator /=(const rational &);
-
-	friend rational operator -(const rational &);
+	rational operator -() const;
 
 	friend std::istream & operator >> (std::istream &, rational &);
 	friend std::ostream & operator << (std::ostream &, const rational &);

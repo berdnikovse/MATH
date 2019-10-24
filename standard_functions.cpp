@@ -11,6 +11,12 @@ unsigned long long gcd(unsigned long long a, unsigned long long b)
 	return a;
 }
 
+unsigned long long lcm(unsigned long long a, unsigned long long b)
+{
+	a /= gcd(a, b);
+	return a * b;
+}
+
 void cancel__(unsigned long long &a, unsigned long long &b)
 {
 	unsigned long long common_factor = gcd(a, b);

@@ -22,7 +22,8 @@ const char *matrix_err_list[] = {
 	"minor is void!",
 	"minor row subscript is invalid!",
 	"minor column subscript is invalid!",
-	"minor pattern is not suitable for the matrix"
+	"minor pattern is not suitable for the matrix!",
+	"could not create such a large matrix!"
 };
 
 void catch_matrix_exception(matrix_error err_num)

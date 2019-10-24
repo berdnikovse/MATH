@@ -5,6 +5,7 @@
 bool is_digit(unsigned char c);
 
 unsigned long long gcd(unsigned long long, unsigned long long);
+unsigned long long lcm(unsigned long long, unsigned long long);
 void cancel__(unsigned long long &, unsigned long long &);
 
 template <class T>
