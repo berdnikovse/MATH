@@ -107,6 +107,18 @@ matrix<element_type>::~matrix()
 }
 
 template<class element_type>
+void matrix<element_type>::fill(element_type (*filling_func)(size_t, size_t))
+{
+	for (size_t row_counter = 0; row_counter < this->get_height(); row_counter++)
+	{
+		for (size_t column_counter = 0; column_counter < this->get_width(); column_counter++)
+		{
+			(*this)[cb(row_counter, column_counter)] = filling_func(row_counter, column_counter);
+		}
+	}
+}
+
+template<class element_type>
 size_t matrix<element_type>::get_height() const
 {
 	return this->height;

@@ -27,6 +27,6 @@ enum matrix_error {
 	COULD_NOT_CREATE_SUCH_A_LARGE_MATRIX
 };
 
-const char *matrix_err_list[];
+extern const char *matrix_err_list[];
 
 void catch_matrix_exception(matrix_error err_num);

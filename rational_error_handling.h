@@ -8,6 +8,6 @@ enum rational_error{
 	STRING_IS_NOT_A_FRACTION
 };
 
-const char *rational_err_list[];
+extern const char *rational_err_list[];
 
 void catch_rational_exception(rational_error err_num);

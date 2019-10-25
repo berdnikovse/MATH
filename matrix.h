@@ -33,15 +33,18 @@ private:
 
 public:
 	//constructors
-	matrix(size_t, size_t);
-	matrix(size_t = 0);
-	matrix(const matrix <element_type> &);
-	matrix(const std::vector <element_type> &);
-	matrix(const element_type * const * const _array, const size_t &, const size_t &);
-	matrix(const element_type *_array, size_t new_height);
+	matrix(size_t, size_t); //creates rectangular matrix with given dimensions filled with zeores
+	matrix(size_t = 0); //creates identity matrix with given size
+	matrix(const matrix <element_type> &); //copy constructor
+	matrix(const std::vector <element_type> &); //creates matrix-coulmn from vector-column
+	matrix(const element_type * const * const _array, const size_t &, const size_t &); //creates rectangular matrix with given dimensions and body
+	matrix(const element_type *_array, size_t new_height); //creates matrix-coulmn from an array-column
 
 	//destructor
 	~matrix();
+
+	//set_ functions
+	void fill(element_type(*filling_func)(size_t, size_t)); //fills matrix with values of filling_func(i, j)
 
 
 	//basic get_ functions
@@ -69,13 +72,13 @@ public:
 
 
 	//basic checking operations
-	bool is_void() const;
-	bool row_is_void(size_t) const;
-	bool column_is_void(size_t) const;
-	bool is_compatible(const matrix <element_type> &) const;
+	bool is_void() const; //checks whether both of matrix dimentions are non-zero
+	bool row_is_void(size_t) const; //checks whether there is at least one non-zero element in the row with given number
+	bool column_is_void(size_t) const; //checks whether there is at least one non-zero element in the column with given number
+	bool is_compatible(const matrix <element_type> &) const; //cheks whether it is possible to add given matrix to this
 	bool is_valid(subscript) const;
-	bool row_is_valid(size_t) const;
-	bool column_is_valid(size_t) const;
+	bool row_is_valid(size_t) const; //checks whether given row number is valid
+	bool column_is_valid(size_t) const; //checks whether given column number is valid
 	bool is_suitable(const minor &) const;
 	bool is_square() const;
 	bool is_singular() const;
