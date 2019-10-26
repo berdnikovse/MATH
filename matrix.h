@@ -28,7 +28,7 @@ private:
 	//basic private operations
 	void assign_one_row_to_another(size_t, size_t);
 	void assign_one_column_to_another(size_t, size_t);
-	void change_sign();
+	void change_element_sign();
 
 
 public:
@@ -45,7 +45,7 @@ public:
 
 	//set_ functions
 	void fill(element_type(*filling_func)(size_t, size_t)); //fills matrix with values of filling_func(i, j)
-
+	void set_sign();
 
 	//basic get_ functions
 	size_t get_height() const;
@@ -57,6 +57,7 @@ public:
 	matrix <element_type> &operator =(const matrix <element_type> &);
 	matrix <element_type> &operator +=(const matrix <element_type> &);
 	matrix <element_type> &operator -=(const matrix <element_type> &);
+	matrix <element_type> &operator ^=(int);
 	element_type &operator[] (subscript);
 	element_type operator[] (subscript) const;
 	matrix <element_type> operator -() const;
@@ -79,7 +80,7 @@ public:
 	bool is_valid(subscript) const;
 	bool row_is_valid(size_t) const; //checks whether given row number is valid
 	bool column_is_valid(size_t) const; //checks whether given column number is valid
-	bool is_suitable(const minor &) const;
+	bool is_suitable(const minor &) const; //checks whether minor pattren is suitable for the matrix
 	bool is_square() const;
 	bool is_singular() const;
 
@@ -167,6 +168,9 @@ matrix <element_type> operator /(const matrix <element_type> &, const element_ty
 
 template <class element_type>
 matrix <element_type> operator /(const element_type &, const matrix <element_type> &);
+
+template <class element_type>
+matrix <element_type> operator ^(const matrix <element_type> &, int);
 
 template <class element_type>
 //this operator attaches one matrix to another horizontally

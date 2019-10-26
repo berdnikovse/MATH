@@ -1,3 +1,5 @@
+#include "matrix.h"
+#include "matrix.h"
 #define EPS 1e-6
 #define ELEMENT_NULL 0
 #define ELEMENT_ID 1
@@ -28,7 +30,7 @@ void matrix<element_type>::assign_one_column_to_another(size_t source_number, si
 }
 
 template<class element_type>
-void matrix<element_type>::change_sign()
+void matrix<element_type>::change_element_sign()
 {
 	for (size_t row_counter = 0; row_counter < this->get_height(); row_counter++)
 	{
@@ -119,6 +121,12 @@ void matrix<element_type>::fill(element_type (*filling_func)(size_t, size_t))
 }
 
 template<class element_type>
+void matrix<element_type>::set_sign()
+{
+	this->is_transposed = false;
+}
+
+template<class element_type>
 size_t matrix<element_type>::get_height() const
 {
 	return this->height;
@@ -185,10 +193,17 @@ matrix<element_type>& matrix<element_type>::operator -= (const matrix<element_ty
 }
 
 template<class element_type>
+matrix<element_type>& matrix<element_type>::operator^=(int deg)
+{
+	*this = power(*this, deg);
+	return *this;
+}
+
+template<class element_type>
 matrix<element_type> matrix<element_type>::operator -() const
 {
 	matrix <element_type> this_copy(*this);
-	this_copy.change_sign();
+	this_copy.change_element_sign();
 	return this_copy;
 }
 
@@ -316,6 +331,12 @@ matrix<element_type> operator/(const element_type & a, const matrix<element_type
 	throw_exception(!is_null(a), DIVISION_BY_ZERO);
 	element_type b = ELEMENT_ID / a;
 	return b * A;
+}
+
+template<class element_type>
+matrix<element_type> operator^(const matrix<element_type> &base, int deg)
+{
+	return power(base, deg);
 }
 
 template<class element_type>
@@ -659,6 +680,7 @@ element_type matrix<element_type>::determinant() const
 {
 	throw_exception(this->is_square(), MATRIX_IS_NOT_SQUARE);
 	matrix <element_type> temp_matrix = (*this);
+	temp_matrix.set_sign();
 	temp_matrix.to_diagonal();
 	element_type product = ELEMENT_ID;
 	for (size_t i = 0; i < this->height; i++)
