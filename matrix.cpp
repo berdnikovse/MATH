@@ -1,5 +1,4 @@
 #include "matrix.h"
-#include "matrix.h"
 #define EPS 1e-6
 #define ELEMENT_NULL 0
 #define ELEMENT_ID 1
