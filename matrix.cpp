@@ -1,10 +1,9 @@
 #include "matrix.h"
-#define EPS 1e-6
 #define ELEMENT_NULL 0
 #define ELEMENT_ID 1
 #define MAX_MATRIX_SIZE 1000
 
-#define is_null(a) ((a) == 0)
+#define is_null(a) ((a).is_zero())
 
 template<class element_type>
 void matrix<element_type>::assign_one_row_to_another(size_t source_number, size_t copy_number)
@@ -115,6 +114,18 @@ void matrix<element_type>::fill(element_type (*filling_func)(size_t, size_t))
 		for (size_t column_counter = 0; column_counter < this->get_width(); column_counter++)
 		{
 			(*this)[cb(row_counter, column_counter)] = filling_func(row_counter, column_counter);
+		}
+	}
+}
+
+template<class element_type>
+void matrix<element_type>::apply(element_type(*to_be_applied)(const element_type &))
+{
+	for (size_t row_counter = 0; row_counter < this->get_height(); row_counter++)
+	{
+		for (size_t column_counter = 0; column_counter < this->get_width(); column_counter++)
+		{
+			(*this)[cb(row_counter, column_counter)] = to_be_applied((*this)[cb(row_counter, column_counter)]);
 		}
 	}
 }

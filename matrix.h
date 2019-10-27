@@ -45,6 +45,7 @@ public:
 
 	//set_ functions
 	void fill(element_type(*filling_func)(size_t, size_t)); //fills matrix with values of filling_func(i, j)
+	void apply(element_type(*to_be_applied)(const element_type &)); //applies function "to_be_applied" to each element of the matrix
 	void set_sign();
 
 	//basic get_ functions
