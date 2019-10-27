@@ -62,7 +62,7 @@ void complex::conjugate()
 
 bool complex::is_zero() const
 {
-	return ABS(this->abs()) < EPS;
+	return this->abs() < EPS;
 }
 
 complex complex::get_inversed() const
