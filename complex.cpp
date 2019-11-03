@@ -124,6 +124,7 @@ complex complex::operator-() const
 complex & complex::operator^=(const complex &deg)
 {
 	*this = complex_power(*this, deg);
+	return *this;
 }
 
 std::ostream & operator<<(std::ostream & output, const complex &to_be_printed)
