@@ -196,7 +196,7 @@ matrix<element_type>& matrix<element_type>::operator -= (const matrix<element_ty
 	{
 		for (size_t column_counter = 0; column_counter < this->width; column_counter++)
 		{
-			(*this)[cb(row_counter, column_counter)] = to_add[cb(row_counter, column_counter)];
+			(*this)[cb(row_counter, column_counter)] -= to_add[cb(row_counter, column_counter)];
 		}
 	}
 	return *this;
