@@ -3,7 +3,7 @@
 #define ELEMENT_ID 1
 #define MAX_MATRIX_SIZE 1000
 
-#define is_null(a) ((a).is_zero())
+#define is_null(a) ((a) == 0)
 
 template<class element_type>
 void matrix<element_type>::assign_one_row_to_another(size_t source_number, size_t copy_number)
