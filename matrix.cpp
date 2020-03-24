@@ -370,7 +370,7 @@ inline matrix<element_type> operator&(const matrix<element_type>& left_top, cons
 {
 	matrix <element_type> left_top_extended = left_top | matrix <element_type>(left_top.get_height(), right_bottom.get_width());
 	matrix <element_type> right_bottom_extended = matrix <element_type>(right_bottom.get_height(), left_top.get_width()) | right_bottom;
-	return left_top_extended / right_bottom_extended;
+	return left_top_extended || right_bottom_extended;
 }
 
 
